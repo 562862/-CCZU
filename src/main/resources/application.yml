@@ -1,0 +1,77 @@
+server:
+  port: 8888
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/cczu_wuxin?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  mail:
+    host: smtp.qq.com
+    port: 465
+    username: 2734894973@qq.com
+    password: xxx
+    properties:
+      mail:
+        smtp:
+          ssl:
+            enable: true
+          auth: true
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.cczu.wuxin.entity
+  configuration:
+    map-underscore-to-camel-case: true
+
+# 自定义配置 — 多源爬虫
+app:
+  crawler:
+    sources:
+      - name: 王诤微电子学院
+        college: 微电子学院
+        base-url: https://jsjx.cczu.edu.cn/21177/list.htm
+        pages: 5
+        selector: "li.news"
+        title-selector: "span.news_title a[href]"
+        date-selector: "span.news_meta"
+      - name: 材料科学与工程学院
+        college: 材料学院
+        base-url: https://clxy.cczu.edu.cn/2502/list.htm
+        pages: 3
+        selector: "li.news"
+        title-selector: "span.news_title a[href]"
+        date-selector: "span.news_meta"
+      - name: 石油化工学院
+        college: 石化学院
+        base-url: https://che.cczu.edu.cn/2968/list.htm
+        pages: 3
+        selector: "li.news"
+        title-selector: "span.news_title a[href]"
+        date-selector: "span.news_meta"
+      - name: 环境科学与工程学院
+        college: 环境学院
+        base-url: https://cmee.cczu.edu.cn/21936/list.htm
+        pages: 3
+        selector: "li.news"
+        title-selector: "span.news_title a[href]"
+        date-selector: "span.news_meta"
+      - name: 阿里云大数据学院
+        college: 大数据学院
+        base-url: https://bigdata.cczu.edu.cn/zygg/list.htm
+        pages: 3
+        selector: "li.news"
+        title-selector: "span.news_title a[href]"
+        date-selector: "span.news_meta"
+      - name: 法学院
+        college: 法学院
+        base-url: https://zfxy.cczu.edu.cn/tzgg/list.htm
+        pages: 3
+        selector: "li.news"
+        title-selector: "span.news_title a[href]"
+        date-selector: "span.news_meta"
+  mail:
+    enabled: true
+    notify-to: 2734894973@qq.com

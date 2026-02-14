@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cczu.wuxin.mapper.CompetitionMapper">
+
+    <insert id="insert" parameterType="com.cczu.wuxin.entity.Competition" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO competition (title, url, content, publish_date, college, category)
+        VALUES (#{title}, #{url}, #{content}, #{publishDate}, #{college}, #{category})
+    </insert>
+
+    <select id="selectById" resultType="com.cczu.wuxin.entity.Competition">
+        SELECT id, title, url, content, publish_date, crawl_time, college, category
+        FROM competition
+        WHERE id = #{id}
+    </select>
+
+    <!-- 公共过滤条件片段 -->
+    <sql id="listWhereClause">
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND title LIKE CONCAT('%', #{keyword}, '%')
+            </if>
+            <if test="startDate != null">
+                AND publish_date &gt;= #{startDate}
+            </if>
+            <if test="endDate != null">
+                AND publish_date &lt;= #{endDate}
+            </if>
+            <if test="college != null and college != ''">
+                AND college = #{college}
+            </if>
+            <if test="category != null and category != ''">
+                AND category = #{category}
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectList" resultType="com.cczu.wuxin.entity.Competition">
+        SELECT id, title, url, publish_date, crawl_time, college, category
+        FROM competition
+        <include refid="listWhereClause"/>
+        ORDER BY publish_date DESC, crawl_time DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countList" resultType="int">
+        SELECT COUNT(*)
+        FROM competition
+        <include refid="listWhereClause"/>
+    </select>
+
+    <select id="existsByUrl" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM competition
+        WHERE url = #{url}
+    </select>
+
+    <select id="selectColleges" resultType="string">
+        SELECT DISTINCT college FROM competition WHERE college IS NOT NULL AND college != '' ORDER BY college
+    </select>
+
+    <select id="selectCategories" resultType="string">
+        SELECT DISTINCT category FROM competition WHERE category IS NOT NULL AND category != '' ORDER BY category
+    </select>
+
+</mapper>
