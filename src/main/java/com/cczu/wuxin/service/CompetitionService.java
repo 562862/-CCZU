@@ -19,10 +19,10 @@ public class CompetitionService {
     }
 
     public Map<String, Object> getList(String keyword, LocalDate startDate, LocalDate endDate,
-                                       String college, String category, int page, int size) {
+                                       String college, String category, String level, int page, int size) {
         int offset = (page - 1) * size;
-        List<Competition> list = competitionMapper.selectList(keyword, startDate, endDate, college, category, offset, size);
-        int total = competitionMapper.countList(keyword, startDate, endDate, college, category);
+        List<Competition> list = competitionMapper.selectList(keyword, startDate, endDate, college, category, level, offset, size);
+        int total = competitionMapper.countList(keyword, startDate, endDate, college, category, level);
 
         Map<String, Object> result = new HashMap<>();
         result.put("list", list);
@@ -43,5 +43,9 @@ public class CompetitionService {
 
     public List<String> getCategories() {
         return competitionMapper.selectCategories();
+    }
+
+    public List<String> getLevels() {
+        return competitionMapper.selectLevels();
     }
 }

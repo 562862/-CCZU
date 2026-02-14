@@ -13,6 +13,9 @@ public class Competition {
     private LocalDateTime crawlTime;
     private String college;
     private String category;
+    private String level;
+    private LocalDate deadline;
+    private String organizer;
 
     public Competition() {}
 
@@ -30,6 +33,19 @@ public class Competition {
         this.publishDate = publishDate;
         this.college = college;
         this.category = category;
+    }
+
+    public Competition(String title, String url, String content, LocalDate publishDate,
+                       String college, String category, String level, LocalDate deadline, String organizer) {
+        this.title = title;
+        this.url = url;
+        this.content = content;
+        this.publishDate = publishDate;
+        this.college = college;
+        this.category = category;
+        this.level = level;
+        this.deadline = deadline;
+        this.organizer = organizer;
     }
 
     public Long getId() { return id; }
@@ -55,4 +71,13 @@ public class Competition {
 
     public String getCategory() { return category; }
     public void setCategory(String category) { this.category = category; }
+
+    public String getLevel() { return level; }
+    public void setLevel(String level) { this.level = level; }
+
+    public LocalDate getDeadline() { return deadline; }
+    public void setDeadline(LocalDate deadline) { this.deadline = deadline; }
+
+    public String getOrganizer() { return organizer; }
+    public void setOrganizer(String organizer) { this.organizer = organizer; }
 }

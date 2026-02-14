@@ -8,7 +8,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -16,17 +15,40 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class CrawlerService {
 
     private static final Logger log = LoggerFactory.getLogger(CrawlerService.class);
 
-    // 扩展关键词列表
+    // 扩展关键词列表：通用竞赛词 + 具体赛事名
     private static final List<String> KEYWORDS = Arrays.asList(
+            // 通用竞赛词
             "竞赛", "比赛", "大赛", "竞技", "挑战赛",
-            "报名", "参赛", "选拔", "评审", "答辩", "获奖", "喜报"
+            "报名", "参赛", "选拔", "评审", "答辩", "获奖", "喜报",
+            // 具体赛事名
+            "蓝桥杯", "数学建模", "ACM", "电子设计", "机械创新",
+            "挑战杯", "互联网+", "智能车", "机器人", "创新大赛",
+            "程序设计", "算法", "编程", "物理实验", "化学实验",
+            "力学竞赛", "结构设计", "节能减排", "工程训练", "创业计划", "职业规划"
     );
+
+    // 截止日期提取正则
+    private static final Pattern[] DEADLINE_PATTERNS = {
+            Pattern.compile("截止日期[：:]\\s*(\\d{4}[-年/.](\\d{1,2})[-月/.](\\d{1,2}))"),
+            Pattern.compile("报名截止[：:]\\s*(\\d{4}[-年/.](\\d{1,2})[-月/.](\\d{1,2}))"),
+            Pattern.compile("截止时间[：:]\\s*(\\d{4}[-年/.](\\d{1,2})[-月/.](\\d{1,2}))"),
+            Pattern.compile("(\\d{4}[-年/.](\\d{1,2})[-月/.](\\d{1,2}))[前日]?\\s*(?:截止|前)")
+    };
+
+    // 组织单位提取正则
+    private static final Pattern[] ORGANIZER_PATTERNS = {
+            Pattern.compile("主办单位[：:]\\s*(.+?)[\\n，。;]"),
+            Pattern.compile("承办单位[：:]\\s*(.+?)[\\n，。;]"),
+            Pattern.compile("组织单位[：:]\\s*(.+?)[\\n，。;]")
+    };
 
     private final CompetitionMapper competitionMapper;
     private final EmailService emailService;
@@ -40,7 +62,7 @@ public class CrawlerService {
     }
 
     /**
-     * 主爬虫方法：遍历所有配置的学院源
+     * 主爬虫方法：遍历所有配置的源
      */
     public void crawl() {
         List<CrawlerProperties.Source> sources = crawlerProperties.getSources();
@@ -87,7 +109,6 @@ public class CrawlerService {
                         .timeout(15000)
                         .get();
 
-                // 使用配置的选择器，默认 li.news
                 String selector = source.getSelector() != null ? source.getSelector() : "li.news";
                 Elements items = doc.select(selector);
                 log.info("  [{}] 第 {} 页找到 {} 条", source.getCollege(), page, items.size());
@@ -107,7 +128,6 @@ public class CrawlerService {
 
     private void processItem(Element item, CrawlerProperties.Source source,
                               String domain, List<String> newTitles, List<String> newUrls) throws Exception {
-        // 使用配置的标题选择器，默认 span.news_title a[href]
         String titleSel = source.getTitleSelector() != null ? source.getTitleSelector() : "span.news_title a[href]";
         Element link = item.selectFirst(titleSel);
         if (link == null) return;
@@ -140,12 +160,19 @@ public class CrawlerService {
         // 自动检测分类
         String category = detectCategory(title);
 
-        Competition comp = new Competition(title, href, content, publishDate, source.getCollege(), category);
+        // v1.2 新增：检测比赛级别、提取截止日期和组织单位
+        String level = detectLevel(title);
+        LocalDate deadline = extractDeadline(content);
+        String organizer = extractOrganizer(content);
+
+        Competition comp = new Competition(title, href, content, publishDate,
+                source.getCollege(), category, level, deadline, organizer);
         competitionMapper.insert(comp);
 
         newTitles.add("[" + source.getCollege() + "] " + title);
         newUrls.add(href);
-        log.info("  新增公告: [{}][{}] {}", source.getCollege(), category, title);
+        log.info("  新增公告: [{}][{}][{}] {}", source.getCollege(), category,
+                level != null ? level : "-", title);
     }
 
     /**
@@ -165,13 +192,63 @@ public class CrawlerService {
         return "其他通知";
     }
 
+    /**
+     * 根据标题关键词检测比赛级别
+     */
+    static String detectLevel(String title) {
+        if (title.contains("全国") || title.contains("国赛") || title.contains("国家级")) {
+            return "国赛";
+        }
+        if (title.contains("省级") || title.contains("省赛") || title.contains("江苏省")) {
+            return "省赛";
+        }
+        if (title.contains("校级") || title.contains("校赛") || title.contains("校内") || title.contains("院内")) {
+            return "校赛";
+        }
+        return null;
+    }
+
+    /**
+     * 从详情页内容中正则提取截止日期
+     */
+    static LocalDate extractDeadline(String content) {
+        if (content == null || content.isEmpty()) return null;
+        for (Pattern p : DEADLINE_PATTERNS) {
+            Matcher m = p.matcher(content);
+            if (m.find()) {
+                String dateStr = m.group(1)
+                        .replace("年", "-").replace("月", "-").replace(".", "-").replace("/", "-");
+                try {
+                    return LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("yyyy-M-d"));
+                } catch (Exception ignored) {}
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 从详情页内容中正则提取组织单位
+     */
+    static String extractOrganizer(String content) {
+        if (content == null || content.isEmpty()) return null;
+        for (Pattern p : ORGANIZER_PATTERNS) {
+            Matcher m = p.matcher(content);
+            if (m.find()) {
+                String org = m.group(1).trim();
+                if (!org.isEmpty() && org.length() <= 200) {
+                    return org;
+                }
+            }
+        }
+        return null;
+    }
+
     private String buildPageUrl(String baseUrl, int page) {
         if (page == 1) return baseUrl;
         return baseUrl.replace("list.htm", "list" + page + ".htm");
     }
 
     private String extractDomain(String url) {
-        // 从 baseUrl 提取域名，如 https://jsjx.cczu.edu.cn/21177/list.htm -> https://jsjx.cczu.edu.cn
         try {
             java.net.URL u = new java.net.URL(url);
             return u.getProtocol() + "://" + u.getHost();

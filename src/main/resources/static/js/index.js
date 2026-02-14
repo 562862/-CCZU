@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('college').addEventListener('change', () => search());
     document.getElementById('category').addEventListener('change', () => search());
+    document.getElementById('level').addEventListener('change', () => search());
 });
 
 function loadFilters() {
@@ -39,6 +40,19 @@ function loadFilters() {
             });
         })
         .catch(() => {});
+
+    fetch('/api/levels')
+        .then(res => res.json())
+        .then(list => {
+            const sel = document.getElementById('level');
+            list.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c;
+                opt.textContent = c;
+                sel.appendChild(opt);
+            });
+        })
+        .catch(() => {});
 }
 
 function search() {
@@ -52,6 +66,7 @@ function loadList() {
     const endDate = document.getElementById('endDate').value;
     const college = document.getElementById('college').value;
     const category = document.getElementById('category').value;
+    const level = document.getElementById('level').value;
 
     const params = new URLSearchParams();
     if (keyword) params.set('keyword', keyword);
@@ -59,6 +74,7 @@ function loadList() {
     if (endDate) params.set('endDate', endDate);
     if (college) params.set('college', college);
     if (category) params.set('category', category);
+    if (level) params.set('level', level);
     params.set('page', currentPage);
     params.set('size', pageSize);
 
@@ -96,7 +112,9 @@ function renderList(list) {
                 <div class="meta">
                     ${item.college ? '<span class="badge-college">' + escapeHtml(item.college) + '</span>' : ''}
                     ${item.category ? '<span class="badge-category">' + escapeHtml(item.category) + '</span>' : ''}
+                    ${item.level ? '<span class="badge-level badge-level-' + levelClass(item.level) + '">' + escapeHtml(item.level) + '</span>' : ''}
                     ${item.publishDate ? '<span class="date-icon">📅</span><span>' + item.publishDate + '</span>' : ''}
+                    ${item.deadline ? '<span class="deadline-icon">⏰</span><span class="deadline-text">截止 ' + item.deadline + '</span>' : ''}
                 </div>
             </div>
             <span class="arrow">›</span>
@@ -129,4 +147,11 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+function levelClass(level) {
+    if (level === '国赛') return 'national';
+    if (level === '省赛') return 'provincial';
+    if (level === '校赛') return 'school';
+    return 'other';
 }

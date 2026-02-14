@@ -72,6 +72,35 @@ app:
         selector: "li.news"
         title-selector: "span.news_title a[href]"
         date-selector: "span.news_meta"
+      # v1.2 新增：校级职能部门
+      - name: 教务处
+        college: 教务处
+        base-url: https://jwc.cczu.edu.cn/1425/list.htm
+        pages: 3
+        selector: "tr:has(table)"
+        title-selector: "td a[href]"
+        date-selector: "td:last-child"
+      - name: 校团委
+        college: 校团委
+        base-url: https://tw.cczu.edu.cn/ggtz/list.htm
+        pages: 3
+        selector: "li:has(a[href*=page])"
+        title-selector: "a[href*=page]"
+        date-selector: "div,span"
+      - name: 创新创业学院-通知
+        college: 创新创业学院
+        base-url: https://cxcy.cczu.edu.cn/6900/list.htm
+        pages: 3
+        selector: "tr:has(table)"
+        title-selector: "td a[href]"
+        date-selector: "td:last-child"
+      - name: 创新创业学院-竞赛
+        college: 创新创业学院
+        base-url: https://cxcy.cczu.edu.cn/18291/list.htm
+        pages: 3
+        selector: "tr:has(table)"
+        title-selector: "td a[href]"
+        date-selector: "td:last-child"
   mail:
     enabled: true
     notify-to: 2734894973@qq.com

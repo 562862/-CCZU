@@ -19,6 +19,7 @@ public interface CompetitionMapper {
                                  @Param("endDate") LocalDate endDate,
                                  @Param("college") String college,
                                  @Param("category") String category,
+                                 @Param("level") String level,
                                  @Param("offset") int offset,
                                  @Param("limit") int limit);
 
@@ -26,11 +27,14 @@ public interface CompetitionMapper {
                   @Param("startDate") LocalDate startDate,
                   @Param("endDate") LocalDate endDate,
                   @Param("college") String college,
-                  @Param("category") String category);
+                  @Param("category") String category,
+                  @Param("level") String level);
 
     boolean existsByUrl(@Param("url") String url);
 
     List<String> selectColleges();
 
     List<String> selectCategories();
+
+    List<String> selectLevels();
 }

@@ -4,12 +4,12 @@
 <mapper namespace="com.cczu.wuxin.mapper.CompetitionMapper">
 
     <insert id="insert" parameterType="com.cczu.wuxin.entity.Competition" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO competition (title, url, content, publish_date, college, category)
-        VALUES (#{title}, #{url}, #{content}, #{publishDate}, #{college}, #{category})
+        INSERT INTO competition (title, url, content, publish_date, college, category, level, deadline, organizer)
+        VALUES (#{title}, #{url}, #{content}, #{publishDate}, #{college}, #{category}, #{level}, #{deadline}, #{organizer})
     </insert>
 
     <select id="selectById" resultType="com.cczu.wuxin.entity.Competition">
-        SELECT id, title, url, content, publish_date, crawl_time, college, category
+        SELECT id, title, url, content, publish_date, crawl_time, college, category, level, deadline, organizer
         FROM competition
         WHERE id = #{id}
     </select>
@@ -32,11 +32,14 @@
             <if test="category != null and category != ''">
                 AND category = #{category}
             </if>
+            <if test="level != null and level != ''">
+                AND level = #{level}
+            </if>
         </where>
     </sql>
 
     <select id="selectList" resultType="com.cczu.wuxin.entity.Competition">
-        SELECT id, title, url, publish_date, crawl_time, college, category
+        SELECT id, title, url, publish_date, crawl_time, college, category, level, deadline, organizer
         FROM competition
         <include refid="listWhereClause"/>
         ORDER BY publish_date DESC, crawl_time DESC
@@ -61,6 +64,10 @@
 
     <select id="selectCategories" resultType="string">
         SELECT DISTINCT category FROM competition WHERE category IS NOT NULL AND category != '' ORDER BY category
+    </select>
+
+    <select id="selectLevels" resultType="string">
+        SELECT DISTINCT level FROM competition WHERE level IS NOT NULL AND level != '' ORDER BY level
     </select>
 
 </mapper>

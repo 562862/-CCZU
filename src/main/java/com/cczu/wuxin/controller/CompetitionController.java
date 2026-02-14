@@ -27,9 +27,10 @@ public class CompetitionController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(required = false) String college,
             @RequestParam(required = false) String category,
+            @RequestParam(required = false) String level,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(competitionService.getList(keyword, startDate, endDate, college, category, page, size));
+        return ResponseEntity.ok(competitionService.getList(keyword, startDate, endDate, college, category, level, page, size));
     }
 
     @GetMapping("/competitions/{id}")
@@ -49,5 +50,10 @@ public class CompetitionController {
     @GetMapping("/categories")
     public ResponseEntity<List<String>> categories() {
         return ResponseEntity.ok(competitionService.getCategories());
+    }
+
+    @GetMapping("/levels")
+    public ResponseEntity<List<String>> levels() {
+        return ResponseEntity.ok(competitionService.getLevels());
     }
 }
