@@ -119,10 +119,57 @@ spring:
 | 端点 | 说明 |
 |------|------|
 | `GET /api/competitions` | 竞赛列表（支持 keyword、college、category、level、startDate、endDate、page、size） |
+| `GET /api/competitions/all` | 全量竞赛数据（一次性返回所有数据，供客户端软件拉取） |
 | `GET /api/competitions/{id}` | 竞赛详情 |
 | `GET /api/colleges` | 学院列表 |
 | `GET /api/categories` | 分类列表 |
 | `GET /api/levels` | 级别列表 |
+
+### GET /api/competitions/all
+
+一次性返回所有竞赛数据，按发布日期倒序排列，无需分页参数。适用于客户端软件全量拉取场景。
+
+**请求示例：**
+
+```
+GET http://localhost:8888/api/competitions/all
+```
+
+**响应示例：**
+
+```json
+[
+  {
+    "id": 67,
+    "title": "关于选拔推荐我校教师参加第六届江苏省高校青年教师教学竞赛的预通知",
+    "url": "https://jwc.cczu.edu.cn/2026/0202/c1425a409564/page.htm",
+    "content": null,
+    "publishDate": "2026-02-08",
+    "crawlTime": "2026-02-15T11:36:28.818574",
+    "college": "教务处",
+    "category": "报名通知",
+    "level": "省赛",
+    "deadline": "2026-04-12",
+    "organizer": null
+  }
+]
+```
+
+**响应字段说明：**
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `id` | number | 竞赛 ID |
+| `title` | string | 竞赛标题 |
+| `url` | string | 原文链接 |
+| `content` | string/null | 详情页正文（列表接口不返回，详情接口返回） |
+| `publishDate` | string | 发布日期（yyyy-MM-dd） |
+| `crawlTime` | string | 爬取时间（ISO 8601） |
+| `college` | string | 来源学院/部门 |
+| `category` | string | 分类（获奖喜报/报名通知/竞赛公告/其他通知） |
+| `level` | string/null | 级别（国赛/省赛/校赛） |
+| `deadline` | string/null | 截止日期（yyyy-MM-dd） |
+| `organizer` | string/null | 组织单位 |
 
 ## 从源码构建安装包
 
