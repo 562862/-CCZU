@@ -37,4 +37,7 @@ public interface CompetitionMapper {
     List<String> selectCategories();
 
     List<String> selectLevels();
+
+    // 查询所有竞赛数据（全量，不分页）
+    List<Competition> selectAll();
 }

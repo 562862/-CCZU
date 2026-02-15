@@ -42,6 +42,12 @@ public class CompetitionController {
         return ResponseEntity.ok(comp);
     }
 
+    // 全量接口：一次性返回所有竞赛数据，供客户端软件拉取
+    @GetMapping("/competitions/all")
+    public ResponseEntity<List<Competition>> all() {
+        return ResponseEntity.ok(competitionService.getAll());
+    }
+
     @GetMapping("/colleges")
     public ResponseEntity<List<String>> colleges() {
         return ResponseEntity.ok(competitionService.getColleges());

@@ -70,4 +70,10 @@
         SELECT DISTINCT level FROM competition WHERE level IS NOT NULL AND level != '' ORDER BY level
     </select>
 
+    <select id="selectAll" resultType="com.cczu.wuxin.entity.Competition">
+        SELECT id, title, url, publish_date, crawl_time, college, category, level, deadline, organizer
+        FROM competition
+        ORDER BY publish_date DESC, crawl_time DESC
+    </select>
+
 </mapper>

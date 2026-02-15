@@ -48,4 +48,9 @@ public class CompetitionService {
     public List<String> getLevels() {
         return competitionMapper.selectLevels();
     }
+
+    // 获取所有竞赛数据（全量，不分页）
+    public List<Competition> getAll() {
+        return competitionMapper.selectAll();
+    }
 }
