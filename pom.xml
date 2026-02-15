@@ -35,7 +35,14 @@
             <version>2.3.2</version>
         </dependency>
 
-        <!-- MySQL Driver -->
+        <!-- H2 内嵌数据库（默认，分发用） -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- MySQL Driver（开发用，可选） -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>

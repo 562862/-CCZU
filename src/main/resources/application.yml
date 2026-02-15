@@ -2,23 +2,31 @@ server:
   port: 8888
 
 spring:
+  # 默认使用 H2 内嵌数据库，数据文件存储在用户目录下
   datasource:
-    url: jdbc:mysql://localhost:3306/cczu_wuxin?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
-    username: root
-    password: 123456
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:h2:file:${user.home}/.cczu-wuxin/data;MODE=MySQL;AUTO_SERVER=TRUE;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
 
-  mail:
-    host: smtp.qq.com
-    port: 465
-    username: 2734894973@qq.com
-    password: xxx
-    properties:
-      mail:
-        smtp:
-          ssl:
-            enable: true
-          auth: true
+  # H2 自动建表（always：文件型 H2 也需要初始化；schema.sql 使用 IF NOT EXISTS 保证幂等）
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+
+  # H2 控制台（调试用，可通过浏览器访问 /h2-console）
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  # 邮件配置 — 默认关闭
+  # 若要启用邮件通知，编辑用户目录下的 .cczu-wuxin/config.yml
+
+  # 加载外部配置文件（用户可覆盖邮件等设置）
+  config:
+    import: optional:file:${user.home}/.cczu-wuxin/config.yml
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
@@ -102,5 +110,5 @@ app:
         title-selector: "td a[href]"
         date-selector: "td:last-child"
   mail:
-    enabled: true
-    notify-to: 2734894973@qq.com
+    enabled: false
+    notify-to:

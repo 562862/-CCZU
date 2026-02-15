@@ -4,6 +4,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -18,18 +19,19 @@ public class EmailService {
 
     private static final Logger log = LoggerFactory.getLogger(EmailService.class);
 
+    // 邮件发送器可选注入：未配置 spring.mail.host 时为 null
     private final JavaMailSender mailSender;
 
-    @Value("${spring.mail.username}")
+    @Value("${spring.mail.username:}")
     private String fromEmail;
 
-    @Value("${app.mail.notify-to}")
+    @Value("${app.mail.notify-to:}")
     private String notifyTo;
 
-    @Value("${app.mail.enabled:true}")
+    @Value("${app.mail.enabled:false}")
     private boolean mailEnabled;
 
-    public EmailService(JavaMailSender mailSender) {
+    public EmailService(@Autowired(required = false) JavaMailSender mailSender) {
         this.mailSender = mailSender;
     }
 
@@ -38,6 +40,11 @@ public class EmailService {
 
         if (!mailEnabled) {
             log.info("邮件通知已关闭，跳过发送（本次发现 {} 条新公告）", titles.size());
+            return;
+        }
+
+        if (mailSender == null) {
+            log.warn("邮件发送器未配置（spring.mail.host 缺失），跳过发送");
             return;
         }
 

@@ -1,0 +1,37 @@
+# ============================================================
+# CCZU-WuXin 邮件通知配置
+# ============================================================
+# 将此文件放置到：%USERPROFILE%\.cczu-wuxin\config.yml
+# 即 C:\Users\你的用户名\.cczu-wuxin\config.yml
+#
+# 修改以下配置后重启程序即可生效。
+# ============================================================
+
+# 启用邮件通知
+app:
+  mail:
+    enabled: true
+    notify-to: receiver@example.com    # 接收通知的邮箱（多个用逗号分隔）
+
+# SMTP 邮箱配置（以 QQ 邮箱为例）
+spring:
+  mail:
+    host: smtp.qq.com
+    port: 465
+    username: your_email@qq.com         # 发件邮箱
+    password: your_smtp_auth_code       # SMTP 授权码（非登录密码）
+    properties:
+      mail.smtp.ssl.enable: true
+      mail.smtp.auth: true
+
+# ============================================================
+# 其他可覆盖配置（按需修改）：
+#
+# server:
+#   port: 8888                          # 修改端口号
+#
+# spring:
+#   h2:
+#     console:
+#       enabled: false                  # 关闭 H2 调试控制台
+# ============================================================
