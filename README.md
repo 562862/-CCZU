@@ -19,7 +19,7 @@
 
 ### 下载运行（推荐）
 
-前往 [Releases](https://github.com/562862/-CCZU/releases/latest) 下载：
+前往 [Releases](https://github.com/562862/cczu-competition/releases/latest) 下载：
 
 | 文件 | 说明 |
 |------|------|
@@ -31,7 +31,7 @@
 ### 源码运行
 
 ```bash
-git clone https://github.com/562862/-CCZU.git
+git clone https://github.com/562862/cczu-competition.git
 cd -CCZU
 mvn spring-boot:run -DskipTests
 ```
