@@ -59,13 +59,13 @@ app:
         selector: "li.news"
         title-selector: "span.news_title a[href]"
         date-selector: "span.news_meta"
-      - name: 环境科学与工程学院
-        college: 环境学院
+      - name: 机械与轨道交通学院
+        college: 机械与轨道交通学院
         base-url: https://cmee.cczu.edu.cn/21936/list.htm
         pages: 3
-        selector: "li.news"
-        title-selector: "span.news_title a[href]"
-        date-selector: "span.news_meta"
+        selector: "li.news, li:has(a[href*=page]), tr.listnews_listbottomline, tr:has(table)"
+        title-selector: "span.news_title a[href], a[href*=page], td a[href]"
+        date-selector: "span.news_meta, td:last-child, div, span"
       - name: 阿里云大数据学院
         college: 大数据学院
         base-url: https://bigdata.cczu.edu.cn/zygg/list.htm
@@ -73,13 +73,147 @@ app:
         selector: "li.news"
         title-selector: "span.news_title a[href]"
         date-selector: "span.news_meta"
-      - name: 法学院
-        college: 法学院
+      - name: 瞿秋白政府管理学院
+        college: 瞿秋白政府管理学院
         base-url: https://zfxy.cczu.edu.cn/tzgg/list.htm
         pages: 3
-        selector: "li.news"
-        title-selector: "span.news_title a[href]"
-        date-selector: "span.news_meta"
+        selector: "li.news, li:has(a[href*=page]), tr.listnews_listbottomline, tr:has(table)"
+        title-selector: "span.news_title a[href], a[href*=page], td a[href]"
+        date-selector: "span.news_meta, td:last-child, div, span"
+      # v1.3 新增：其他学院
+      - name: 安全科学与工程学院
+        college: 安全科学与工程学院
+        base-url: https://sse.cczu.edu.cn/xgdt/list.htm
+        pages: 1
+        selector: "li.news, li:has(a[href*=page]), tr.listnews_listbottomline, tr:has(table)"
+        title-selector: "span.news_title a[href], a[href*=page], td a[href]"
+        date-selector: "span.news_meta, td:last-child, div, span"
+      - name: 药学院生物与食品工程学院
+        college: 药学院生物与食品工程学院
+        base-url: https://life.cczu.edu.cn/11645/list.htm
+        pages: 1
+        selector: "li.news, li:has(a[href*=page]), tr.listnews_listbottomline, tr:has(table)"
+        title-selector: "span.news_title a[href], a[href*=page], td a[href]"
+        date-selector: "span.news_meta, td:last-child, div, span"
+      - name: 医学与健康工程学院
+        college: 医学与健康工程学院
+        base-url: http://med.cczu.edu.cn/tzgg/list.htm
+        pages: 1
+        selector: "li.news, li:has(a[href*=page]), tr.listnews_listbottomline, tr:has(table)"
+        title-selector: "span.news_title a[href], a[href*=page], td a[href]"
+        date-selector: "span.news_meta, td:last-child, div, span"
+      - name: 石油与天然气工程学院
+        college: 石油与天然气工程学院
+        base-url: https://cpe.cczu.edu.cn/22513/list.htm
+        pages: 1
+        selector: "li.news, li:has(a[href*=page]), tr.listnews_listbottomline, tr:has(table)"
+        title-selector: "span.news_title a[href], a[href*=page], td a[href]"
+        date-selector: "span.news_meta, td:last-child, div, span"
+      - name: 环境科学与工程学院
+        college: 环境科学与工程学院
+        base-url: https://ahx.cczu.edu.cn/1919/list.htm
+        pages: 1
+        selector: "li.news, li:has(a[href*=page]), tr.listnews_listbottomline, tr:has(table)"
+        title-selector: "span.news_title a[href], a[href*=page], td a[href]"
+        date-selector: "span.news_meta, td:last-child, div, span"
+      - name: 城市建设学院
+        college: 城市建设学院
+        base-url: https://suc.cczu.edu.cn/18623/list.htm
+        pages: 1
+        selector: "li.news, li:has(a[href*=page]), tr.listnews_listbottomline, tr:has(table)"
+        title-selector: "span.news_title a[href], a[href*=page], td a[href]"
+        date-selector: "span.news_meta, td:last-child, div, span"
+      - name: 商学院刘国钧管理学院
+        college: 商学院刘国钧管理学院
+        base-url: https://jgy.cczu.edu.cn/xwdt/list.htm
+        pages: 1
+        selector: "li.news, li:has(a[href*=page]), tr.listnews_listbottomline, tr:has(table)"
+        title-selector: "span.news_title a[href], a[href*=page], td a[href]"
+        date-selector: "span.news_meta, td:last-child, div, span"
+      - name: 吴敬琏经济学院
+        college: 吴敬琏经济学院
+        base-url: https://jjxy.cczu.edu.cn/16316/list.htm
+        pages: 1
+        selector: "li.news, li:has(a[href*=page]), tr.listnews_listbottomline, tr:has(table)"
+        title-selector: "span.news_title a[href], a[href*=page], td a[href]"
+        date-selector: "span.news_meta, td:last-child, div, span"
+      - name: 史良法学院
+        college: 史良法学院
+        base-url: http://wf.cczu.edu.cn/xwzx/list.htm
+        pages: 1
+        selector: "li.news, li:has(a[href*=page]), tr.listnews_listbottomline, tr:has(table)"
+        title-selector: "span.news_title a[href], a[href*=page], td a[href]"
+        date-selector: "span.news_meta, td:last-child, div, span"
+      - name: 马克思主义学院
+        college: 马克思主义学院
+        base-url: https://marxism.cczu.edu.cn/18329/list.htm
+        pages: 1
+        selector: "li.news, li:has(a[href*=page]), tr.listnews_listbottomline, tr:has(table)"
+        title-selector: "span.news_title a[href], a[href*=page], td a[href]"
+        date-selector: "span.news_meta, td:last-child, div, span"
+      - name: 美术与设计学院
+        college: 美术与设计学院
+        base-url: https://art.cczu.edu.cn/academic/list.htm
+        pages: 1
+        selector: "li.news, li:has(a[href*=page]), tr.listnews_listbottomline, tr:has(table)"
+        title-selector: "span.news_title a[href], a[href*=page], td a[href]"
+        date-selector: "span.news_meta, td:last-child, div, span"
+      - name: 赵元任音乐与戏剧学院
+        college: 赵元任音乐与戏剧学院
+        base-url: https://smf.cczu.edu.cn/tzgg/list.htm
+        pages: 1
+        selector: "li.news, li:has(a[href*=page]), tr.listnews_listbottomline, tr:has(table)"
+        title-selector: "span.news_title a[href], a[href*=page], td a[href]"
+        date-selector: "span.news_meta, td:last-child, div, span"
+      - name: 外国语学院
+        college: 外国语学院
+        base-url: https://sfs.cczu.edu.cn/gggs/list.htm
+        pages: 1
+        selector: "li.news, li:has(a[href*=page]), tr.listnews_listbottomline, tr:has(table)"
+        title-selector: "span.news_title a[href], a[href*=page], td a[href]"
+        date-selector: "span.news_meta, td:last-child, div, span"
+      - name: 周有光文学院
+        college: 周有光文学院
+        base-url: https://zscl.cczu.edu.cn/xsdt/list.htm
+        pages: 1
+        selector: "li.news, li:has(a[href*=page]), tr.listnews_listbottomline, tr:has(table)"
+        title-selector: "span.news_title a[href], a[href*=page], td a[href]"
+        date-selector: "span.news_meta, td:last-child, div, span"
+      - name: 体育学院
+        college: 体育学院
+        base-url: https://pe.cczu.edu.cn/290/list.htm
+        pages: 1
+        selector: "li.news, li:has(a[href*=page]), tr.listnews_listbottomline, tr:has(table)"
+        title-selector: "span.news_title a[href], a[href*=page], td a[href]"
+        date-selector: "span.news_meta, td:last-child, div, span"
+      - name: 海外教育学院
+        college: 海外教育学院
+        base-url: https://soe.cczu.edu.cn/1569/list.htm
+        pages: 1
+        selector: "li.news, li:has(a[href*=page]), tr.listnews_listbottomline, tr:has(table)"
+        title-selector: "span.news_title a[href], a[href*=page], td a[href]"
+        date-selector: "span.news_meta, td:last-child, div, span"
+      - name: 华罗庚学院
+        college: 华罗庚学院
+        base-url: http://hlgxy.cczu.edu.cn/19169/list.htm
+        pages: 1
+        selector: "li.news, li:has(a[href*=page]), tr.listnews_listbottomline, tr:has(table)"
+        title-selector: "span.news_title a[href], a[href*=page], td a[href]"
+        date-selector: "span.news_meta, td:last-child, div, span"
+      - name: 中以机器人产业学院
+        college: 中以机器人产业学院
+        base-url: https://jqrcyxy.cczu.edu.cn/glzd_18469/list.htm
+        pages: 1
+        selector: "li.news, li:has(a[href*=page]), tr.listnews_listbottomline, tr:has(table)"
+        title-selector: "span.news_title a[href], a[href*=page], td a[href]"
+        date-selector: "span.news_meta, td:last-child, div, span"
+      - name: 应用技术学院
+        college: 应用技术学院
+        base-url: https://yyjs.cczu.edu.cn/16442/list.htm
+        pages: 1
+        selector: "li.news, li:has(a[href*=page]), tr.listnews_listbottomline, tr:has(table)"
+        title-selector: "span.news_title a[href], a[href*=page], td a[href]"
+        date-selector: "span.news_meta, td:last-child, div, span"
       # v1.2 新增：校级职能部门
       - name: 教务处
         college: 教务处

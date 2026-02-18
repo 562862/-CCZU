@@ -49,6 +49,24 @@ public class CrawlerService {
             Pattern.compile("承办单位[：:]\\s*(.+?)[\\n，。;]"),
             Pattern.compile("组织单位[：:]\\s*(.+?)[\\n，。;]")
     };
+    private static final List<String> FALLBACK_ITEM_SELECTORS = Arrays.asList(
+            "li.news",
+            "li:has(a[href*=page])",
+            "tr.listnews_listbottomline",
+            "tr:has(table)"
+    );
+    private static final List<String> FALLBACK_TITLE_SELECTORS = Arrays.asList(
+            "span.news_title a[href]",
+            "a[href*=page]",
+            "td a[href]",
+            "a[href]"
+    );
+    private static final List<String> FALLBACK_DATE_SELECTORS = Arrays.asList(
+            "span.news_meta",
+            "td:last-child",
+            "div",
+            "span"
+    );
 
     private final CompetitionMapper competitionMapper;
     private final EmailService emailService;
@@ -109,8 +127,7 @@ public class CrawlerService {
                         .timeout(15000)
                         .get();
 
-                String selector = source.getSelector() != null ? source.getSelector() : "li.news";
-                Elements items = doc.select(selector);
+                Elements items = selectItems(doc, source.getSelector());
                 log.info("  [{}] 第 {} 页找到 {} 条", source.getCollege(), page, items.size());
 
                 for (Element item : items) {
@@ -128,8 +145,7 @@ public class CrawlerService {
 
     private void processItem(Element item, CrawlerProperties.Source source,
                               String domain, List<String> newTitles, List<String> newUrls) throws Exception {
-        String titleSel = source.getTitleSelector() != null ? source.getTitleSelector() : "span.news_title a[href]";
-        Element link = item.selectFirst(titleSel);
+        Element link = selectFirst(item, source.getTitleSelector(), FALLBACK_TITLE_SELECTORS);
         if (link == null) return;
 
         String title = link.attr("title");
@@ -142,7 +158,12 @@ public class CrawlerService {
         boolean matched = KEYWORDS.stream().anyMatch(title::contains);
         if (!matched) return;
 
-        String href = link.attr("href");
+        String href = link.attr("abs:href");
+        if (href == null || href.trim().isEmpty()) {
+            href = link.attr("href");
+        }
+        if (href == null || href.trim().isEmpty()) return;
+        href = href.trim();
         if (!href.startsWith("http")) {
             href = domain + (href.startsWith("/") ? "" : "/") + href;
         }
@@ -151,8 +172,7 @@ public class CrawlerService {
         if (competitionMapper.existsByUrl(href)) return;
 
         // 解析发布日期
-        String dateSel = source.getDateSelector() != null ? source.getDateSelector() : "span.news_meta";
-        LocalDate publishDate = parseDate(item, dateSel);
+        LocalDate publishDate = parseDate(item, source.getDateSelector());
 
         // 抓取详情页内容
         String content = fetchDetail(href);
@@ -245,7 +265,13 @@ public class CrawlerService {
 
     private String buildPageUrl(String baseUrl, int page) {
         if (page == 1) return baseUrl;
-        return baseUrl.replace("list.htm", "list" + page + ".htm");
+        if (baseUrl.contains("list.htm")) {
+            return baseUrl.replace("list.htm", "list" + page + ".htm");
+        }
+        if (baseUrl.contains("list.psp")) {
+            return baseUrl.replace("list.psp", "list" + page + ".psp");
+        }
+        return baseUrl;
     }
 
     private String extractDomain(String url) {
@@ -257,12 +283,60 @@ public class CrawlerService {
         }
     }
 
-    private LocalDate parseDate(Element item, String dateSelector) {
-        Element dateEl = item.selectFirst(dateSelector);
-        if (dateEl != null) {
-            return tryParseDate(dateEl.text().trim());
+    private Elements selectItems(Document doc, String configuredSelector) {
+        if (configuredSelector != null && !configuredSelector.trim().isEmpty()) {
+            Elements configured = doc.select(configuredSelector);
+            if (!configured.isEmpty()) {
+                return configured;
+            }
+        }
+        for (String selector : FALLBACK_ITEM_SELECTORS) {
+            Elements items = doc.select(selector);
+            if (!items.isEmpty()) {
+                return items;
+            }
+        }
+        return new Elements();
+    }
+
+    private Element selectFirst(Element item, String configuredSelector, List<String> fallbackSelectors) {
+        if (configuredSelector != null && !configuredSelector.trim().isEmpty()) {
+            Element el = item.selectFirst(configuredSelector);
+            if (el != null) {
+                return el;
+            }
+        }
+        for (String selector : fallbackSelectors) {
+            Element el = item.selectFirst(selector);
+            if (el != null) {
+                return el;
+            }
         }
         return null;
+    }
+
+    private LocalDate parseDate(Element item, String configuredDateSelector) {
+        if (configuredDateSelector != null && !configuredDateSelector.trim().isEmpty()) {
+            LocalDate parsed = parseDateBySelector(item, configuredDateSelector);
+            if (parsed != null) {
+                return parsed;
+            }
+        }
+        for (String selector : FALLBACK_DATE_SELECTORS) {
+            LocalDate parsed = parseDateBySelector(item, selector);
+            if (parsed != null) {
+                return parsed;
+            }
+        }
+        return tryParseDate(item.text());
+    }
+
+    private LocalDate parseDateBySelector(Element item, String selector) {
+        Element dateEl = item.selectFirst(selector);
+        if (dateEl == null) return null;
+        String text = dateEl.text();
+        if (text == null || text.trim().isEmpty()) return null;
+        return tryParseDate(text.trim());
     }
 
     private LocalDate tryParseDate(String text) {
